@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML5 Canvas and video _ lam theo mau tren lop </title>
+	
+	 <!-- Lam them dua tren code mau  -->
+	
+	<script src="js/jquery-3.6.1.min.js"></script>
+	<link rel="stylesheet" href="css/style1.css">
+	
+<script> 
+
+	
+	document.addEventListener('DOMContentLoaded', function(){
+		var v = document.getElementById('v');
+		
+		var canvas = document.getElementById('c');
+		var context = canvas.getContext('2d');
+		
+		var canvas2 = document.getElementById('canvas');
+	  	var ctx = canvas2.getContext('2d');
+
+		var cw = Math.floor(canvas.clientWidth / 100);
+		var ch = Math.floor(canvas.clientHeight / 100);
+		canvas.width = cw;
+		canvas.height = ch;
+		
+
+		v.addEventListener('play', function(){
+		
+			draw(this,context,cw,ch);
+			
+			var $this = this; //cache
+			//cach 1 de chieu lai video
+			(function loop() {
+			  if (!$this.paused && !$this.ended) {
+				ctx.drawImage($this, 0, 0);
+				setTimeout(loop, 1000 / 30); // drawing at 20fps
+			  }
+			})();
+			
+		},false);
+
+	},false);
+	
+	
+//cach 2 de chieu lai video
+	function draw(v,c,w,h) {
+		if(v.paused || v.ended)	return false;
+		c.drawImage(v,0,0,w,h);
+		setTimeout(draw,20,v,c,w,h);
+	}
+	
+	
+</script> 
+</head>
+
+<body>
+	<canvas id="c"></canvas>
+	<div id="theater">
+		<video id="v" controls="" loop="">
+			
+			<source src="video/Big_Buck_Bunny_small.ogv">
+			<source src="http://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"> 
+
+		</video>
+		<canvas id="canvas"></canvas>
+  	</div>
+</body>
+</html>

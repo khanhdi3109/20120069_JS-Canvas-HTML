@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML5 Canvas and video _ fastsobel _ lam them</title>
+	
+	 <!-- Lam them dua tren code mau  -->
+	
+	<script src="js/jquery-3.6.1.min.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	
+<script> 
+
+	
+document.addEventListener('DOMContentLoaded', function(){
+    var v = document.getElementById('v');
+    var canvas = document.getElementById('c');
+    var context = canvas.getContext('2d');
+    var back = document.createElement('canvas');
+    var backcontext = back.getContext('2d');
+
+    var cw,ch;
+
+    v.addEventListener('play', function(){
+        cw = v.clientWidth;
+        ch = v.clientHeight;
+        canvas.width = cw;
+        canvas.height = ch;
+        back.width = cw;
+        back.height = ch;
+        draw(v,context,backcontext,cw,ch);
+    },false);
+
+},false);
+	
+function draw(v,c,bc,cw,ch) {
+    if(v.paused || v.ended) return false;
+    // First, draw it into the backing canvas
+    bc.drawImage(v,0,0,cw,ch);
+    // Grab the pixel data from the backing canvas
+    var idata = bc.getImageData(0,0,cw,ch);
+    var data = idata.data;
+    var w = idata.width;
+    var limit = data.length
+
+    // Loop through the subpixels, convoluting each using an edge-detection matrix.
+    for(var i = 0; i < limit; i++) {
+        if( i%4 == 3 ) continue;
+	
+        	data[i] = 127 +  2*data[i] - data[i + 4] - data[i + w*4];
+	
+    }
+	
+
+    // Draw the pixels onto the visible canvas
+    c.putImageData(idata,0,0);
+    // Start over!
+    setTimeout(draw,20,v,c,bc,cw,ch);
+}
+	
+	
+</script> 
+</head>
+
+<body>
+	<canvas id="c"></canvas>
+	
+	<video id="v" controls="" loop=""> 
+		
+		<source src="video/Big_Buck_Bunny_small.ogv"> 
+		<source src="http://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"> 
+	</video>
+	
+	
+
+</body>
+</html>

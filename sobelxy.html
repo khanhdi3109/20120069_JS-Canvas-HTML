@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML5 Canvas and video_20120069_Sobelxy</title>
+	
+	 <!-- BTVN tuan 07 _ 20120069   -->
+	
+	<script src="js/jquery-3.6.1.min.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	
+<script> 
+
+document.addEventListener('DOMContentLoaded', function(){
+    var v = document.getElementById('v');
+    var canvas = document.getElementById('c');
+    var context = canvas.getContext('2d');
+    var back = document.createElement('canvas');
+    var backcontext = back.getContext('2d');
+
+    var cw,ch;
+
+    v.addEventListener('play', function(){
+        cw = v.clientWidth;
+        ch = v.clientHeight;
+        canvas.width = cw;
+        canvas.height = ch;
+        back.width = cw;
+        back.height = ch;
+        draw(v,context,backcontext,cw,ch);
+    },false);
+
+},false);
+
+//Ap dung sobel [1,2,1]
+//o day thay so cua kernel vao luon bieu thuc cho de tinh toan
+	
+//kernelX = [  [-1,0,1],[-2,0,2], [-1,0,1]];
+
+//sobel x 
+function conv3x(data, idx, w){
+  	return (data[idx - w - 4] + 2*data[idx - 4] + data[idx + w - 4]
+      -data[idx - w + 4] - 2*data[idx + 4] - data[idx + 4 + 4]);
+}
+
+//kernelY = [ [-1,-2,-1], [0,0,0], [1,2,1] ];
+	
+//sobel y 
+function conv3y(data, idx, w){
+  	return (data[idx - w - 4] + 2*data[idx - w] + data[idx - w + 4]
+      -(data[idx + w - 4] + 2*data[idx + w] + data[idx + w + 4]));
+}
+
+function gradient_internal(pixels)
+{
+	var data = pixels.data;
+	var w = pixels.width*4;
+	var l = data.length - w - 4;
+	var buff = new data.constructor(new ArrayBuffer(data.length));
+  
+	for (var i = w + 4; i < l; i+=4){
+		var dx = conv3x(data, i, w);
+		var dy = conv3y(data, i, w);
+		buff[i] = buff[i + 1] = buff[i + 2] = Math.sqrt(dx*dx + dy*dy);
+		buff[i + 3] = 255;
+	}
+ 	
+	pixels.data.set(buff);
+}
+	
+function draw(v,c,bc,cw,ch) {
+    if(v.paused || v.ended) return false;
+    // First, draw it into the backing canvas
+    bc.drawImage(v,0,0,cw,ch);
+	
+    var idata = bc.getImageData(0,0,cw,ch);
+	
+	gradient_internal(idata); // Apply Sobel operator
+
+    // Draw the pixels onto the visible canvas
+    c.putImageData(idata,0,0);
+	
+    // Start over!
+    setTimeout(draw,20,v,c,bc,cw,ch);
+}
+	
+	
+</script> 
+</head>
+
+<body>
+	<canvas id="c"></canvas>
+	
+	<video id="v" controls="" loop=""> 
+		
+		<source src="video/Big_Buck_Bunny_small.ogv"> 
+		<source src="http://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"> 
+	</video>
+	
+	
+
+</body>
+</html>
