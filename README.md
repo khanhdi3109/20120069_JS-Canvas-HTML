@@ -5,6 +5,6 @@ Tào Khánh Duy - 20120069 - BTVN tuần 08
 
 Chú thích:
 * File bài làm là index.html
-* Các file _lamthem là làm lại code mẫu của thầy
+* Các file _lamthem là code theo hướng dẫn trên lớp
 
 ## [Demo] Link web trên github: (https://khanhdi3109.github.io/20120069_JS-Canvas-HTML/)
